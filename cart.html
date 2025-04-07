@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cart - HealSmart</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f2f2f2;
+    }
+
+    header {
+      background-color: #111;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+
+    .total {
+      text-align: right;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .payment-section {
+      margin-top: 30px;
+    }
+
+    .payment-option {
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #0077cc;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>HealSmart E-Pharmacy - Cart</h1>
+  </header>
+
+  <div class="container">
+    <h2>Your Cart</h2>
+    <div id="cartItemsContainer"></div>
+    <div class="total">Total: ₹<span id="totalAmount">0</span></div>
+
+    <div class="payment-section">
+      <h3>Select Payment Method</h3>
+      <div class="payment-option">
+        <input type="radio" name="payment" value="card" id="card" checked>
+        <label for="card">Credit/Debit Card</label>
+      </div>
+      <div class="payment-option">
+        <input type="radio" name="payment" value="upi" id="upi">
+        <label for="upi">UPI</label>
+      </div>
+      <div class="payment-option">
+        <input type="radio" name="payment" value="cod" id="cod">
+        <label for="cod">Cash on Delivery (COD)</label>
+      </div>
+
+      <button onclick="location.href='payment.html'">Proceed to Payment</button>
+    </div>
+  </div>
+
+  <script>
+    const productData = {
+      "Paracetamol": { price: 20 },
+      "Azithromycin": { price: 35 },
+      "Ibuprofen": { price: 25 },
+      "Pantoprazole": { price: 45 },
+      "Montelukast-Levocetirizine": { price: 100 },
+      "Dabur Chyawanprash": { price: 150 },
+      "Vitamin C Tablets": { price: 120 },
+      "Zincovit Syrup": { price: 90 },
+      "Gluconorm Tablets": { price: 60 },
+      "Sugar Free Gold": { price: 90 },
+      "Accu-Chek Glucometer": { price: 999 }
+    };
+
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const cartContainer = document.getElementById("cartItemsContainer");
+    const totalAmountSpan = document.getElementById("totalAmount");
+
+    let totalPrice = 0;
+
+    if (cart.length === 0) {
+      cartContainer.innerHTML = "<p>Your cart is empty.</p>";
+    } else {
+      cart.forEach(item => {
+        if (!item.name || !item.quantity) return;
+
+        const price = productData[item.name]?.price || 0;
+        const itemTotal = price * item.quantity;
+        totalPrice += itemTotal;
+
+        const div = document.createElement("div");
+        div.className = "cart-item";
+        div.innerHTML = `
+          <div><strong>${item.name}</strong> × ${item.quantity}</div>
+          <div>₹${itemTotal}</div>
+        `;
+        cartContainer.appendChild(div);
+      });
+
+      totalAmountSpan.textContent = totalPrice;
+    }
+  </script>
+</body>
+</html>

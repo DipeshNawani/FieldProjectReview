@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HealSmart E-Pharmacy</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="index.css">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="firebase-init.js"></script>
+  <script src="medicine.js"></script>
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <a href="index.html"><div class="logo">HealSmart</div></a>
+      <ul class="nav-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#ai-doctor">AI Doctor</a></li>
+        <li><a href="#med-box">Smart Med Box</a></li>
+        <li><a href="#pharmacy">E-Pharmacy</a></li>
+      </ul>
+      <button id="cartBtn" class="cart-button">Cart (<span id="cartCount">0</span>)</button>  
+    </nav>
+  </header>
+  <div class="slider-container">
+    <div class="slider">
+      <img src="pexels-julie-viken-148496-593451.jpg" alt="Slide 1" class="slide active">
+      <img src="pexels-karolina-grabowska-4046996.jpg" alt="Slide 2" class="slide active">
+      <img src="pexels-pixabay-139398.jpg" alt="slide3" class="slide active">
+      <img src="pexels-pixabay-208512-scaled-1-1920x1280 1.png" alt="slide4" class="slide active">
+      <img src="pexels-shvetsa-3683090.jpg" alt="slide5" class="slide active">
+
+      <!-- Add more <img> if needed -->
+    </div>
+  
+    <div class="slider-overlay">
+      <h2>Order Medicines Easily</h2>
+      <div class="search-upload">
+        <input type="text" placeholder="Search medicine" />
+        <section class="prescription-upload">
+          <h2>Have a Prescription?</h2>
+          <p>Upload it here and we'll take care of the rest!</p>
+          <input type="file" id="prescriptionInput" accept=".jpg,.jpeg,.png,.pdf" />
+          <button onclick="uploadPrescription()">Upload</button>
+          <p id="uploadStatus"></p>
+        </section>
+        
+      </div>
+    </div>
+  </div>  
+  <div class="section-header">
+    <h2>Our Products</h2>
+    <a href="all-products.html" class="see-all-link">See all</a>
+  </div>
+  
+    <div class="product-section">
+      <div class="product-card">
+        <img src="https://assets.sayacare.in/api/images/product_image/large_image/23/74/paracetamol-500-mg-10-tablet-23_1.webp" alt="Medicine 1" />
+        <h3>Paracetamol</h3>
+        <p>500mg, 10 tablets</p>
+        <button class="add-to-cart" data-name="Paracetamol" data-price="50">Add to Cart</button>
+      </div>
+
+      <div class="product-card">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbH4gAnUymUgChEBnTrYfLzGbQgIZR25PtyA&s.jpg" alt="Medicine 2" />
+        <h3>Azithromycin</h3>
+        <p>250mg, 6 tablets</p>
+        <button class="add-to-cart" data-name="Azithromycin" data-price="100">Add to Cart</button>
+      </div>
+
+      <div class="product-card">
+        <img src="https://static.toiimg.com/thumb/msid-118540180,width-1280,height-720,resizemode-4/118540180.jpg.jpg" alt="Medicine 3" />
+        <h3>Ibuprofen</h3>
+        <p>200mg, 15 tablets</p>
+        <button class="add-to-cart" data-name="Ibuprofen" data-price="150">Add to Cart</button>
+      </div>
+      <div class="product-card">
+        <img src="https://waylonehealthcare.in/wp-content/uploads/2024/01/PANLONE-40.jpg" alt="Medicine 4" />
+        <h3>Pantoprazole</h3>
+        <p>200mg, 15 tablets</p>
+        <button class="add-to-cart" data-name="Pantoprazole" data-price="150">Add to Cart</button>
+      </div>
+      <div class="product-card">
+        <img src="  https://zeelabpharmacy.com/public/uploads/other_brand_image/Zee67769de1d2331-400X.webp" alt="Medicine 5" />
+        <h3>Montelukast-Levocetirizine.</h3>
+        <p>200mg, 25   tablets</p>
+        <button class="add-to-cart" data-name="Montelukast-Levocetirizine" data-price="200">Add to Cart</button>
+      </div>
+    </div>
+  </main>
+
+  <div id="cartSidebar" class="cart-sidebar">
+    <div class="cart-header">
+      <h3>Your Cart</h3>
+      <button onclick="closeCart()" class="close-btn">×</button>
+    </div>
+    <div id="cart-items" class="cart-items"></div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <p>Total: ₹<span id="cart-total">0</span></p>
+      </div>
+      <button onclick="goToCartPage()" class="checkout-btn">Proceed to Checkout</button>
+    </div>
+  </div>
+
+  <script>
+    // Make addToCart function globally accessible
+    window.addToCart = async function(productName, price) {
+      try {
+        const cartRef = firebase.firestore().collection('cart');
+        await cartRef.add({
+          name: productName,
+          price: price,
+          quantity: 1,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        await initializeCart();
+        alert(`${productName} added to cart!`);
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+        alert("Error adding to cart. Please try again.");
+      }
+    };
+
+    // Add event listeners to all add-to-cart buttons
+    document.addEventListener('DOMContentLoaded', () => {
+      const addToCartButtons = document.querySelectorAll('.add-to-cart');
+      addToCartButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const productName = button.getAttribute('data-name');
+          const price = parseFloat(button.getAttribute('data-price'));
+          addToCart(productName, price);
+        });
+      });
+
+      // Add event listener for cart button
+      const cartBtn = document.getElementById('cartBtn');
+      if (cartBtn) {
+        cartBtn.addEventListener('click', () => {
+          const cartSidebar = document.getElementById('cartSidebar');
+          if (cartSidebar) {
+            cartSidebar.style.display = 'block';
+          }
+        });
+      }
+    });
+  </script>
+ <!-- Immunity Boost Products -->
+<h2 class="category-heading">Immunity Boost</h2>
+<div class="product-section">
+  <div class="product-card">
+    <img src="https://m.media-amazon.com/images/I/71tH6y4K-SL._AC_UF1000,1000_QL80_.jpg" alt="Chyawanprash" />
+    <h3>Dabur Chyawanprash</h3>
+    <p>500g</p>
+    <button class="add-to-cart" data-name="Dabur Chyawanprash" data-price="150">Add to Cart</button>
+  </div>
+
+  <div class="product-card">
+    <img src="https://m.media-amazon.com/images/I/61Q-+KR3WcL._AC_UF894,1000_QL80_.jpg" alt="Vitamin C Tablets" />
+    <h3>Vitamin C Tablets</h3>
+    <p>60 tablets</p>
+    <button class="add-to-cart" data-name="Vitamin C Tablets" data-price="120">Add to Cart</button>
+  </div>
+
+  <div class="product-card">
+    <img src="https://assets.truemeds.in/Images/ProductImage/TM-SYUP1-008212/zincovit-syrup-200ml_zincovit-syrup-200ml--TM-SYUP1-008212_1.png" alt="Zincovit Syrup" />
+    <h3>Zincovit Syrup</h3>
+    <p>200ml</p>
+    <button class="add-to-cart" data-name="Zincovit Syrup" data-price="90">Add to Cart</button>
+  </div>
+</div>
+<!-- Diabetes Care Products -->
+<h2 class="category-heading">Diabetes Care</h2>
+<div class="product-section">
+  <div class="product-card">
+    <img src="https://cdn01.pharmeasy.in/dam/products/242108/gluconorm-vg-2mg-tablet-1-1641310383.jpg" alt="Gluconorm" />
+    <h3>Gluconorm Tablets</h3>
+    <p>500mg, 10 tablets</p>
+   
+    <button class="add-to-cart" data-name="Gluconorm Tablets" data-price="60">Add to Cart</button>
+  </div>
+
+  <div class="product-card">
+    <img src="https://www.emedicalwala.com/wp-content/uploads/2022/06/1544782779_2918.jpg" alt="Sugar Free Gold" />
+    <h3>Sugar Free Gold</h3>
+    <p>100 tablets</p>
+
+    <button class="add-to-cart" data-name="Sugar Free Gold" data-price="90">Add to Cart</button>
+  </div>
+
+  <div class="product-card">
+    <img src="https://www.accu-chek.in/sites/g/files/iut376/f/accu-chek_active_meter_image_ccexpress.png" alt="Accu-Chek Glucometer" />
+    <h3>Accu-Chek Glucometer</h3>
+    <p>With 10 Strips</p>
+  
+    <button class="add-to-cart" data-name="Accu-Chek Glucometer" data-price="999">Add to Cart</button>
+  </div>
+</div>
+
+  
+  <footer class="footer">
+    <div class="footer-section left">
+      <h2>HealSmart</h2>
+      <p>Your Health, Your Data, 100% Secure.</p>
+      <div class="social-icons">
+        <img src="facebook-social-media-icon-symbol-illustration-free-vector-removebg-preview 1.png" alt="Facebook">
+        <img src="instagram-black-logo-on-transparent-background-free-vector-removebg-preview 1.png" alt="Instagram">
+        <img src="google-play-apple-store-logo-icon-button-free-vector-removebg-preview 1.png" alt="Google Play">
+      </div>
+    </div>
+    <div class="footer-section">
+      <h3>Company</h3>
+      <p>About us</p>
+      <p>Pricing</p>
+    </div>
+    <div class="footer-section">
+      <h3>Our Product</h3>
+      <p>AI HEALTH ASSISTANT</p>
+      <p>AI DOCTOR</p>
+      <p>YOUR PHARMACY STORE</p>
+    </div>
+    <div class="footer-section">
+      <h3>Resources</h3>
+      <p><em>Health blogs</em></p>
+      <p><em>Do's and don'ts for kids and elders</em></p>
+    </div>
+    <div class="footer-bottom">
+      <div class="query-box">
+        <h3>Have a Query?</h3>
+        <input type="text" id="queryInput" placeholder="Enter your query">
+        <button id="submitQuery">Submit</button>
+      </div>
+      <div class="contact-box">
+        <h3>Contact Us</h3>
+        <input type="text" id="contactName" placeholder="Your Name">
+        <input type="email" id="contactEmail" placeholder="Your Email">
+        <textarea rows="3" id="contactMessage" placeholder="Your Message"></textarea>
+        <button id="submitContact">Send</button>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

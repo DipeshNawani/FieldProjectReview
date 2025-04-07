@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HealSmart - Payment</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f6f8;
+    }
+
+    header {
+      background-color: #111;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h2, h3 {
+      text-align: center;
+      color: #333;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .total {
+      text-align: right;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .payment-section {
+      margin-top: 30px;
+    }
+
+    .payment-option {
+      margin-bottom: 10px;
+    }
+
+    .details-section input, .details-section textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      margin-top: 20px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+    }
+
+    .btn:hover {
+      background-color: #218838;
+    }
+
+    .input-group {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>HealSmart E-Pharmacy - Checkout</h1>
+  </header>
+
+  <div class="container">
+    <h2>Your Cart Summary</h2>
+    <div id="cartItemsContainer"></div>
+    <div class="total">Total: ₹<span id="totalAmount">0</span></div>
+
+    <div class="payment-section">
+      <h3>Select Payment Method</h3>
+      <div class="payment-option">
+        <input type="radio" name="payment" value="Card" id="card" checked>
+        <label for="card">Credit/Debit Card</label>
+      </div>
+      <div class="payment-option">
+        <input type="radio" name="payment" value="UPI" id="upi">
+        <label for="upi">UPI</label>
+      </div>
+      <div class="payment-option">
+        <input type="radio" name="payment" value="COD" id="cod">
+        <label for="cod">Cash on Delivery (COD)</label>
+      </div>
+      <div id="paymentDetails"></div>
+    </div>
+
+    <div class="details-section">
+      <h3>Shipping Details</h3>
+      <input type="text" id="name" placeholder="Full Name" required>
+      <input type="tel" id="phone" placeholder="Phone Number" required>
+      <textarea id="address" placeholder="Delivery Address" rows="3" required></textarea>
+      <input type="email" id="email" placeholder="Email for confirmation" required>
+    </div>
+
+    <div class="input-group">
+      <input type="text" id="promoCode" placeholder="Promo Code">
+      <button class="btn" onclick="applyPromo()">Apply Promo</button>
+    </div>
+
+    <button class="btn" onclick="proceedPayment()">Proceed to Payment</button>
+  </div>
+
+  <script>
+    const productData = {
+      "Paracetamol": { price: 20 },
+      "Azithromycin": { price: 35 },
+      "Ibuprofen": { price: 25 },
+      "Pantoprazole": { price: 45 },
+      "Montelukast-Levocetirizine": { price: 100 },
+      "Dabur Chyawanprash": { price: 150 },
+      "Vitamin C Tablets": { price: 120 },
+      "Zincovit Syrup": { price: 90 },
+      "Gluconorm Tablets": { price: 60 },
+      "Sugar Free Gold": { price: 90 },
+      "Accu-Chek Glucometer": { price: 999 }
+    };
+
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const cartContainer = document.getElementById("cartItemsContainer");
+    const totalAmountSpan = document.getElementById("totalAmount");
+    const paymentDetails = document.getElementById("paymentDetails");
+    let totalPrice = 0;
+
+    function renderCart() {
+      if (cart.length === 0) {
+        cartContainer.innerHTML = "<p>Your cart is empty.</p>";
+      } else {
+        cart.forEach(item => {
+          const price = productData[item.name]?.price || 0;
+          const itemTotal = item.quantity * price;
+          totalPrice += itemTotal;
+
+          const div = document.createElement("div");
+          div.className = "cart-item";
+          div.innerHTML = `<div><strong>${item.name}</strong> × ${item.quantity}</div><div>₹${itemTotal}</div>`;
+          cartContainer.appendChild(div);
+        });
+        totalAmountSpan.textContent = totalPrice;
+      }
+    }
+
+    function applyPromo() {
+      const promoCode = document.getElementById("promoCode").value;
+      if (promoCode === "HEAL20") {
+        const discount = totalPrice * 0.2;
+        totalPrice -= discount;
+        alert(`Promo Applied! You saved ₹${discount.toFixed(2)}`);
+        totalAmountSpan.textContent = totalPrice.toFixed(2);
+      } else {
+        alert("Invalid Promo Code");
+      }
+    }
+
+    function proceedPayment() {
+      const method = document.querySelector('input[name="payment"]:checked').value;
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const address = document.getElementById("address").value.trim();
+      const email = document.getElementById("email").value.trim();
+
+      if (!name || !phone || !address || !email) {
+        alert("Please fill in all shipping details.");
+        return;
+      }
+
+      alert(`Order placed using ${method.toUpperCase()}! Total Paid: ₹${totalPrice.toFixed(2)}\n\nConfirmation sent to ${email}`);
+      localStorage.removeItem("cart");
+      window.location.href = "index.html";
+    }
+
+    document.querySelectorAll('input[name="payment"]').forEach(radio => {
+      radio.addEventListener('change', function () {
+        let html = "";
+        if (this.value === "Card") {
+          html = `
+            <input type='text' placeholder='Card Number' required />
+            <input type='text' placeholder='Name on Card' required />
+            <input type='text' placeholder='Expiry (MM/YY)' required />
+            <input type='password' placeholder='CVV' required />
+          `;
+        } else if (this.value === "UPI") {
+          html = `<input type='text' placeholder='Enter UPI ID' required />`;
+        } else {
+          html = "<p>No extra details needed for COD.</p>";
+        }
+        paymentDetails.innerHTML = html;
+      });
+    });
+
+    renderCart();
+  </script>
+</body>
+</html>

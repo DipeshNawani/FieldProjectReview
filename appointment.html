@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="index.css">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="appointment.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+           <a href="index.html"><div class="logo">HealSmart</div></a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#ai-doctor">AI Doctor</a></li>
+                <li><a href="#med-box">Smart Med Box</a></li>
+                <li><a href="#pharmacy">E-Pharmacy</a></li>
+            </ul>
+        </nav>
+      </header>
+      <section class="appointment-hero">
+        <div class="hero-content">
+          <h1>BOOK YOUR APPOINTMENT NOW!!</h1>
+          <a href="appointment.html" class="btn-cta" type="button">Schedule Now</a>
+        </div>
+      </section>    
+      <section class="top-doctors">
+        <h2>India's top doctors</h2>
+        <p class="subheading">Get an online second opinion from Top Doctors</p>
+      
+        <div class="doctor-grid">
+          <div class="doctor-card">
+            <img src="dr-naresh-trehan.png" alt="Dr. Naresh Trehan">
+            <h3>Dr. Naresh Trehan</h3>
+            <p>(Cardiologist)</p>
+            <button class="book-btn" onclick="openForm('modalNaresh')">Book appointment</button>
+          </div>
+      
+          <div class="doctor-card">
+            <img src="1651214917_Dr_Rakesh_Mahajan_2c941d2b1e.jpg" alt="Dr. Rakesh Mahajan">
+            <h3>Dr. Rakesh Mahajan</h3>
+            <p>(Arthroscopy Surgeon)</p>
+            <button class="book-btn" onclick="openForm('modalRakesh')">Book appointment</button>
+          </div>
+      
+          <div class="doctor-card">
+            <img src="dr_balbir_singh_f6b4fadefe.jpg" alt="Dr. Balbir Singh">
+            <h3>Dr. Balbir Singh</h3>
+            <p>(Specializes in coronary angioplasty)</p>
+            <button class="book-btn" onclick="openForm('modalBalbir')">Book appointment</button>
+          </div>
+
+        
+          <div id="modalNaresh" class="modal">
+            <div class="modal-content">
+              <span class="close-btn" onclick="closeForm('modalNaresh')">&times;</span>
+              <h3>Book Appointment with Dr. Naresh Trehan</h3>
+              <form id="formNaresh">
+                <input type="text" placeholder="Your Name" required><br>
+                <input type="email" placeholder="Your Email" required><br>
+                <input type="date" required><br>
+                <button type="submit">Confirm Appointment</button>
+              </form>
+            </div>
+          </div>
+          <div id="modalRakesh" class="modal">
+            <div class="modal-content">
+              <span class="close-btn" onclick="closeForm('modalRakesh')">&times;</span>
+              <h3>Book Appointment with Dr. Rakesh Mahajan</h3>
+              <form id="formRakesh">
+                <input type="text" placeholder="Your Name" required><br>
+                <input type="email" placeholder="Your Email" required><br>
+                <input type="date" required><br>
+                <button type="submit">Confirm Appointment</button>
+              </form>
+            </div>
+          </div>
+          <div id="modalBalbir" class="modal">
+            <div class="modal-content">
+              <span class="close-btn" onclick="closeForm('modalBalbir')">&times;</span>
+              <h3>Book Appointment with Dr. Balbir Singh</h3>
+              <form id="formBalbir">
+                <input type="text" placeholder="Your Name" required><br>
+                <input type="email" placeholder="Your Email" required><br>
+                <input type="date" required><br>
+                <button type="submit">Confirm Appointment</button>
+              </form>
+            </div>
+          </div>
+          
+          
+      
+          <div class="doctor-card">
+            <img src="images (4).jpeg" alt="Dr. Pankaj Aneja">
+            <h3>Dr. Pankaj Aneja</h3>
+            <p>(Specializing in Diabetes management)</p>
+            <button class="book-btn" onclick="openForm('modalPankaj')">Book appointment</button>
+          </div>
+        </div>
+
+        <div id="modalPankaj" class="modal">
+            <div class="modal-content">
+              <span class="close-btn" onclick="closeForm('modalPankaj')">&times;</span>
+              <h3>Book Appointment with Dr. Pankaj Aneja</h3>
+              <form id="formPankaj">
+                <input type="text" placeholder="Your Name" required><br>
+                <input type="email" placeholder="Your Email" required><br>
+                <input type="date" required><br>
+                <button type="submit">Confirm Appointment</button>
+              </form>
+            </div>
+          </div>
+          
+      </section>
+<div style="margin:auto; margin-top: 30px;">
+  <button onclick="showAppointmentHistory()" class="book-btn" style="margin:auto">View My Appointments</button>
+</div>
+
+<div id="appointmentHistory" style="display: none; margin-top: 20px; text-align: center; margin:auto"></div>
+
+<section id="howItWorks" class="how-it-works">
+    <h2>How It Works</h2>
+    <div class="steps-container">
+      <div class="step">
+        <img src="medical-team.png" alt="Step 1" />
+        <h3>1. Select Your Doctor</h3>
+        <p>Choose a specialist based on your needs from our qualified list.</p>
+      </div>
+      <div class="step">
+        <img src="booking.png" alt="Step 2" />
+        <h3>2. Book an Appointment</h3>
+        <p>Fill in your details, choose a date & time that works best for you.</p>
+      </div>
+      <div class="step">
+        <img src="email.png" alt="Step 3" />
+        <h3>3. Get Confirmation</h3>
+        <p>Receive an email confirmation instantly with appointment details.</p>
+      </div>
+    </div>
+  </section>
+  
+  <footer class="footer">
+    <div class="footer-section left">
+        <h2>HealSmart</h2>
+        <p>Your Health, Your Data, 100% Secure.</p>
+        <div class="social-icons">
+            <img src="facebook-social-media-icon-symbol-illustration-free-vector-removebg-preview 1.png" alt="Facebook">
+            <img src="instagram-black-logo-on-transparent-background-free-vector-removebg-preview 1.png" alt="Instagram">
+            <img src="google-play-apple-store-logo-icon-button-free-vector-removebg-preview 1.png" alt="Google Play">
+        </div>
+        <div class="app-buttons">
+        </div>
+    </div>
+    <div class="footer-section">
+        <h3>Company</h3>
+        <p>About us</p>
+        <p>Pricing</p>
+    </div>
+    <div class="footer-section">
+        <h3>Our Product</h3>
+        <p>AI HEALTH ASSISTANT</p>
+        <p>AI DOCTOR</p>
+        <p>YOUR PHARMACY STORE</p>
+    </div>
+    <div class="footer-section">
+        <h3>Resources</h3>
+        <p><em>Health blogs</em></p>
+        <p><em>Do's and don'ts for kids and elders</em></p>
+    </div>
+    <div class="footer-bottom">
+        <div class="query-box">
+            <h3>Have a Query?</h3>
+            <input type="text" placeholder="Enter your query" id="queryInput">
+            <button id="submitQuery">Submit</button>
+        </div>
+        <div class="contact-box">
+            <h3>Contact Us</h3>
+            <input type="text" placeholder="Your Name" id="contactName">
+            <input type="email" placeholder="Your Email" id="contactEmail">
+            <textarea rows="3" placeholder="Your Message" id="contactMessage"></textarea>
+            <button id="submitContact">Send</button>
+        </div>
+    </div>
+</footer>
+
+
+
+      
+</body>
+</html>
